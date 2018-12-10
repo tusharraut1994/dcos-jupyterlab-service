@@ -8,12 +8,12 @@
         "name": {
           "description": "Name of this service instance.",
           "type": "string",
-          "default": "/jupyterlab-notebook"
+          "default": "/portworx-jupyterlab-notebook"
         },
         "cmd": {
           "description": "",
           "type": "string",
-          "default": "/usr/local/bin/start.sh ${CONDA_DIR}/bin/jupyter lab --notebook-dir=${MESOS_SANDBOX}"
+          "default": "/usr/local/bin/start.sh ${CONDA_DIR}/bin/jupyter lab --notebook-dir=${MESOS_SANDBOX}/data"
         },
         "cpus": {
           "description": "CPU shares to allocate to the service instance.",
@@ -35,7 +35,7 @@
         "user": {
           "description": "Notebook will run as this user.",
           "type": "string",
-          "default": "nobody"
+          "default": "root"
         },
         "gpu_support": {
           "type": "object",
@@ -292,7 +292,7 @@
         "spark_user": {
           "description": "Spark Mesos User.",
           "type": "string",
-          "default": "nobody"
+          "default": "root"
         }
       }
     },
@@ -304,17 +304,30 @@
           "type": "object",
           "description": "Enable persistent storage.",
           "properties": {
-            "host_volume_size": {
-              "description": "Size of the persistent volume in MB.",
-              "type": "number",
-              "default": 4000
+            "portworx_volume_name": {
+              "description": "Name of the Portworx volume.",
+              "type": "string",
+              "default": "jupyter-volume"
             },
-            "enable": {
-              "description": "Enable or disable persistent storage.",
-              "type": "boolean",
-              "default": false
+            "portworx_volume_size": {
+              "description": "Size of the Portworx volume in GB.",
+              "type": "number",
+              "minimum": 1,
+              "default": 10
+            },
+            "portworx_volume_replication_factor": {
+              "description": "Replication factor of the Portworx volume.",
+              "type": "number",
+              "minimum": 1,
+              "maximum": 3,
+              "default": 1
             }
-          }
+          },
+          "required": [
+            "portworx_volume_name",
+            "portworx_volume_size",
+            "portworx_volume_replication_factor"
+          ]
         }
       }
     },
@@ -406,7 +419,7 @@
         "jupyter_config_dir": {
           "description": "Jupyter Configuration Directory.",
           "type": "string",
-          "default": "/mnt/mesos/sandbox/.jupyter"
+          "default": "/mnt/mesos/sandbox/data/.jupyter"
         },
         "jupyter_password": {
           "description": "Jupyter Password.\n\nIf empty it defaults to password: \"jupyter\"",
@@ -446,7 +459,7 @@
         "user": {
           "description": "User under which Notebook runs.",
           "type": "string",
-          "default": "nobody"
+          "default": "root"
         },
         "tensorboard_logdir": {
           "description": "TensorBoard Log Dir.",

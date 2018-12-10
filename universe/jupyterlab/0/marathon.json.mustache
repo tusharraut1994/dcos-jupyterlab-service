@@ -12,22 +12,19 @@
   "container": {
     "type": "MESOS",
     "volumes": [
-    {{#storage.persistence.enable}}
-        {
-        "persistent": {
-        "type": "root",
-        "size": {{storage.host_volume_size}},
-        "constraints": []
+      {
+        "external": {
+          "provider": "dvdi",
+          "name": "{{storage.persistence.portworx_volume_name}}",
+          "size": {{storage.persistence.portworx_volume_size}},
+          "options": {
+            "dvdi/driver": "pxd",
+            "dvdi/repl": "{{storage.persistence.portworx_volume_replication_factor}}"
+          }
         },
         "mode": "RW",
-        "containerPath": "persistent_data"
-        },
-        {
-        "containerPath": "/mnt/mesos/sandbox/persistent_data",
-        "hostPath": "persistent_data",
-        "mode": "RW"
-        }
-    {{/storage.persistence.enable}}
+        "containerPath": "data"
+      }
     ],
     "docker": {
       {{#service.gpu_support.enabled}}
@@ -331,12 +328,6 @@
       "maxConsecutiveFailures": 3
     }
   ],
-  {{^storage.persistence.enable}}
-  "unreachableStrategy": {
-    "expungeAfterSeconds": 0,
-    "inactiveAfterSeconds": 0
-  },
-  {{/storage.persistence.enable}}
   "upgradeStrategy": {
     "minimumHealthCapacity": 0,
     "maximumOverCapacity": 0
