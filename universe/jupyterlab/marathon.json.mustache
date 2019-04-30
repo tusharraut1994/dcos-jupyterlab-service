@@ -14,38 +14,19 @@
   "container": {
     "type": "MESOS",
     "volumes": [
-
-      {{#service.service_account_secret}}
       {
-        "containerPath": "secrets/service-account.json",
-        "secret": "serviceCredential"
-
-      {{#storage.local_persistence.enabled}}
-      },
-      {{/storage.local_persistence.enabled}}
-      {{^storage.local_persistence.enabled}}
-      }
-      {{/storage.local_persistence.enabled}}
-
-      {{/service.service_account_secret}}
-
-      {{#storage.local_persistence.enabled}}
-      {
-        "containerPath": "{{storage.local_persistence.volume_path}}",
+        "external": {
+          "provider": "dvdi",
+          "name": "{{storage.persistence.portworx_volume_name}}",
+          "size": {{storage.persistence.portworx_volume_size}},
+          "options": {
+            "dvdi/driver": "pxd",
+            "dvdi/repl": "{{storage.persistence.portworx_volume_replication_factor}}"
+          }
+        },
         "mode": "RW",
-        "persistent": {
-          "type": "root",
-          "size": {{storage.local_persistence.volume_size}},
-          "constraints": []
-        }
-      },
-      {
-        "containerPath": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}",
-        "hostPath": "{{storage.local_persistence.volume_path}}",
-        "mode": "RW"
+        "containerPath": "data"
       }
-      {{/storage.local_persistence.enabled}}
-
     ],
     "docker": {
 
