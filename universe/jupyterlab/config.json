@@ -3,16 +3,18 @@
   "properties": {
     "service": {
       "type": "object",
-      "id": "https://github.com/mesosphere/mesosphere-jupyter-service",
-      "title": "Mesosphere Jupyter Service Configuration",
-      "description": "Mesospere Jupyter Service Configuration Properties",
+      "description": "The JupyterLab Notebook Service for Mesosphere DC/OS comes with a variety of pre-installed packages. Further information can be found here: https://github.com/dcos/examples/tree/master/jupyterlab.",
       "properties": {
         "name": {
+          "description": "Name of this service instance.",
           "type": "string",
-          "pattern": "^(\\/?((\\.\\.)|(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9]))?($|\\/))+$",
-          "title": "Service Name",
-          "description": "Unique name for this Mesosphere Jupyter Service instance consisting of a series of words separated by slashes. Each word must be at least 1 alphanumeric character and may only contain digits (`0-9`), dashes (`-`), dots (`.`), and lowercase letters (`a-z`). The word may not begin or end with a dash",
-          "default": "/jupyter"
+          "default": "/portworx-jupyterlab-notebook"
+        },
+        "cmd": {
+          "type": "string",
+          "title": "Entrypoint",
+          "description": "The shell command to use to launch the Mesosphere Jupyter Service",
+          "default": "/usr/local/bin/start.sh ${CONDA_DIR}/bin/jupyter lab --notebook-dir=${MESOS_SANDBOX}/data"
         },
         "cpus": {
           "type": "number",
@@ -25,7 +27,7 @@
           "type": "integer",
           "title": "Memory Allocation",
           "description": "Memory to allocate to the service instance in MiB (e.g., 8192)",
-          "minimum": 4096,
+          "minimum": 1024,
           "default": 8192
         },
         "gpu": {
@@ -86,13 +88,7 @@
           "type": "string",
           "title": "Linux User (Jupyter Notebook Process Execution Context)",
           "description": "The Linux user account name under whom the Jupyter Notebook will run and own the Mesos Sandbox. Note: It is not recommended to set the Mesosphere Jupyter Service to run as root",
-          "default": "nobody"
-        },
-        "cmd": {
-          "type": "string",
-          "title": "Entrypoint",
-          "description": "The shell command to use to launch the Mesosphere Jupyter Service",
-          "default": "/usr/local/bin/start.sh ${CONDA_DIR}/bin/jupyter lab --notebook-dir=\"${MESOS_SANDBOX}\""
+          "default": "root"
         },
         "log_level": {
           "type": "string",
@@ -162,64 +158,36 @@
     },
     "storage": {
       "type": "object",
-      "title": "Mesosphere Jupyter Service Storage Configuration",
-      "description": "Mesosphere Jupyter Service Storage Configuration",
+      "description": "DC/OS JupyterLab storage configuration.",
       "properties": {
-        "local_persistence": {
+        "persistence": {
           "type": "object",
-          "title": "Local Persistent Storage Configuration",
-          "description": "Local Persistent Storage Configuration",
+          "description": "Enable persistent storage.",
           "properties": {
-            "enabled": {
-              "title": "Enable Local Persistent Storage?",
-              "description": "Enable Local Persistent Storage?",
-              "type": "boolean",
-              "default": false
-            },
-            "volume_size": {
-              "title": "Local Persistent Volume Size",
-              "description": "Size of the local persistent volume in MiB",
-              "type": "integer",
-              "default": 4000
-            },
-            "volume_path": {
-              "title": "Local Persistent Volume Path",
-              "description": "Path at which to produce the volume (relative to the Mesos Sandbox) within the container",
+            "portworx_volume_name": {
+              "description": "Name of the Portworx volume.",
               "type": "string",
-              "default": "jupyter_data"
+              "default": "jupyter-volume"
+            },
+            "portworx_volume_size": {
+              "description": "Size of the Portworx volume in GB.",
+              "type": "number",
+              "minimum": 1,
+              "default": 10
+            },
+            "portworx_volume_replication_factor": {
+              "description": "Replication factor of the Portworx volume.",
+              "type": "number",
+              "minimum": 1,
+              "maximum": 3,
+              "default": 1
             }
-          }
-        },
-        "s3": {
-          "type": "object",
-          "title": "S3 Object Store Configuration",
-          "description": "S3 Object Store Configuration",
-          "properties": {
-            "aws_region": {
-              "type": "string",
-              "title": "S3: Region",
-              "description": "S3 Region",
-              "default": "us-east-1"
-            },
-            "endpoint": {
-              "type": "string",
-              "title": "S3: Endpoint",
-              "description": "S3 Endpoint",
-              "default": "s3.us-east-1.amazonaws.com"
-            },
-            "use_https": {
-              "type": "boolean",
-              "title": "S3: Enable HTTPS?",
-              "description": "Enable connections to S3 over HTTPS?",
-              "default": true
-            },
-            "verify_ssl": {
-              "type": "boolean",
-              "title": "S3: Verify TLS?",
-              "description": "Verify TLS Certificate(s) for the S3 endpoint?",
-              "default": true
-            }
-          }
+          },
+          "required": [
+            "portworx_volume_name",
+            "portworx_volume_size",
+            "portworx_volume_replication_factor"
+          ]
         }
       }
     },
@@ -317,6 +285,34 @@
           "title": "Use DC/OS Highly Available DNS Dispatcher (Spartan)?",
           "description": "Use the DC/OS DNS Dispatcher (Spartan) to resolve OpenID Connect endpoints. Note: This typically does not need to be modified",
           "default": true
+        }
+      }
+    },
+    "s3": {
+      "type": "object",
+      "description": "S3 Configuration.",
+      "properties": { 
+        "aws_region": {
+          "description": "Your AWS Region.",
+          "type": "string",
+          "default": "us-east-1"
+        },
+        "s3_endpoint": { 
+          "description": "Your S3 endpoint.",
+          "type": "string",
+          "default": "s3.us-east-1.amazonaws.com"
+        },
+        "s3_https": {
+          "description": "Enable S3 HTTPS.\n\nNote: Set 1 for true and 0 for false.",
+          "type": "number",
+          "default": 1,
+          "minimum": 0
+        },
+        "s3_ssl": {
+          "description": "Your S3 SSL Verification.\n\nNote: Set 1 for true and 0 for false.",
+          "type": "number",
+          "default": 1,
+          "minimum": 0
         }
       }
     },
@@ -514,7 +510,7 @@
           "type": "string",
           "title": "Spark User (Process Execution Context)",
           "description": "The Linux user under which the Spark Executors will run",
-          "default": "nobody"
+          "default": "root"
         }
       }
     },
@@ -528,6 +524,16 @@
           "title": "Force-Pull Mesosphere Jupyter Service Docker Image?",
           "description": "Always force a pull of the Mesosphere Jupyter Service Docker Image?",
           "default": false
+        },
+        "secrets": {
+          "description": "Enable secrets for DC/OS Service Account and AWS credentials.\n\nEnterprise feature only.",
+          "type": "boolean",
+          "default": false
+        },
+        "service_credential": {
+          "description": "DC/OS Service Credential Secret Source.\n\nNote: Enterprise feature only.",
+          "type": "string",
+          "default": "jupyterlab-notebook/serviceCredential"
         },
         "force_pull_worker_image": {
           "type": "boolean",
@@ -557,7 +563,7 @@
           "type": "string",
           "title": "Jupyter Notebook Configuration Directory",
           "description": "Jupyter Notebook Configuration Directory (JUPYTER_CONFIG_DIR)",
-          "default": "/mnt/mesos/sandbox/.jupyter"
+          "default": "/mnt/mesos/sandbox/data/.jupyter"
         },
         "jupyter_runtime_dir": {
           "type": "string",
@@ -587,7 +593,7 @@
           "type": "string",
           "title": "JVM Options",
           "description": "JVM Options (JAVA_OPTS)",
-          "default": "-server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/mesos/sandbox"
+          "default": "\"-server -XX:+UseG1GC -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/mnt/mesos/sandbox\""
         },
         "nginx_log_level": {
           "type": "string",
