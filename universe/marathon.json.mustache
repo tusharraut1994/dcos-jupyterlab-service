@@ -14,6 +14,14 @@
   "container": {
     "type": "MESOS",
     "volumes": [
+      {{#service.service_account_secret}}
+      {
+        "containerPath": "secrets/service-account.json",
+        "secret": "serviceCredential",
+        {{#storage.persistence.enabled}}
+      }
+      {{/storage.persistence.enabled}}
+      {{/service.service_account_secret}}
       {
         "external": {
           "provider": "dvdi",
@@ -40,8 +48,7 @@
       "forcePullImage": {{advanced.force_pull_jupyter_image}}
     }
 
-    {{#networking.cni_network_enabled}}
-    ,
+    {{#networking.cni_network_enabled}},
     "portMappings": [
         {
           "containerPort": 8080,
@@ -231,16 +238,16 @@
     "MESOS_MODULES": "{\"libraries\":[{\"file\":\"\/opt\/mesosphere\/libmesos-bundle\/lib\/mesos\/libdcos_security.so\",\"modules\":[{\"name\": \"com_mesosphere_dcos_ClassicRPCAuthenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"}]},{\"name\":\"com_mesosphere_dcos_http_Authenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"},{\"key\":\"jwt_exp_timeout\",\"value\":\"5mins\"},{\"key\":\"preemptive_refresh_duration\",\"value\":\"30mins\"}]}]}]}",
     {{/service.service_account_secret}}
 
-    {{#storage.local_persistence.enabled}}
-    "CONDA_ENVS_PATH": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}/conda/envs:/opt/conda/envs",
-    "CONDA_PKGS_DIRS": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}/conda/pkgs:/opt/conda/pkgs",
-    "DCOS_DIR": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}/.dcos",
-    "HADOOP_CONF_DIR": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}",
-    "HOME": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}",
-    "JUPYTER_CONFIG_DIR": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}/.jupyter",
-    "JUPYTER_RUNTIME_DIR": "{{advanced.sandbox}}/{{storage.local_persistence.volume_path}}/.local/share/jupyter/runtime",
-    {{/storage.local_persistence.enabled}}
-    {{^storage.local_persistence.enabled}}
+    {{#storage.persistence.enabled}}
+    "CONDA_ENVS_PATH": "{{advanced.sandbox}}/conda/envs:/opt/conda/envs",
+    "CONDA_PKGS_DIRS": "{{advanced.sandbox}}/conda/pkgs:/opt/conda/pkgs",
+    "DCOS_DIR": "{{advanced.sandbox}}/.dcos",
+    "HADOOP_CONF_DIR": "{{advanced.sandbox}}",
+    "HOME": "{{advanced.sandbox}}",
+    "JUPYTER_CONFIG_DIR": "{{advanced.sandbox}}/.jupyter",
+    "JUPYTER_RUNTIME_DIR": "{{advanced.sandbox}}/.local/share/jupyter/runtime",
+    {{/storage.persistence.enabled}}
+    {{^storage.persistence.enabled}}
     "CONDA_ENVS_PATH": "{{advanced.conda_envs_path}}",
     "CONDA_PKGS_DIRS": "{{advanced.conda_pkgs_dir}}",
     "DCOS_DIR": "{{advanced.dcos_dir}}",
@@ -248,7 +255,7 @@
     "HOME": "{{advanced.home}}",
     "JUPYTER_CONFIG_DIR": "{{advanced.jupyter_config_dir}}",
     "JUPYTER_RUNTIME_DIR": "{{advanced.jupyter_runtime_dir}}",
-    {{/storage.local_persistence.enabled}}
+    {{/storage.persistence.enabled}}
     
     "ENABLE_SPARK_MONITOR": "{{advanced.spark_monitor_enabled}}",
     "JAVA_OPTS": "'{{advanced.java_opts}}'",
@@ -421,12 +428,12 @@
     }
   ],
 
-  {{^storage.local_persistence.enabled}}
+  {{^storage.persistence.enabled}}
   "unreachableStrategy": {
     "expungeAfterSeconds": 0,
     "inactiveAfterSeconds": 0
   },
-  {{/storage.local_persistence.enabled}}
+  {{/storage.persistence.enabled}}
 
   "upgradeStrategy": {
     "minimumHealthCapacity": 0,

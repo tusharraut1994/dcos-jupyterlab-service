@@ -12,7 +12,7 @@
           "pattern": "^(\\/?((\\.\\.)|(([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9])\\.)*([a-z0-9]|[a-z0-9][a-z0-9\\-]*[a-z0-9]))?($|\\/))+$",
           "title": "Service Name",
           "description": "Unique name for this Mesosphere Jupyter Service instance consisting of a series of words separated by slashes. Each word must be at least 1 alphanumeric character and may only contain digits (`0-9`), dashes (`-`), dots (`.`), and lowercase letters (`a-z`). The word may not begin or end with a dash",
-          "default": "/portworx-jupyterlab-notebook"
+          "default": "/portworx-jupyter"
         },
         "cpus": {
           "type": "number",
@@ -162,11 +162,12 @@
     },
     "storage": {
       "type": "object",
-      "description": "DC/OS JupyterLab storage configuration.",
+      "title": "Mesosphere Jupyter Service Storage Configuration",
+      "description": "Mesosphere Jupyter Service Storage Configuration",
       "properties": {
         "persistence": {
           "type": "object",
-          "description": "Enable persistent storage.",
+          "description": "Enable Portworx storage configuration",
           "properties": {
             "portworx_volume_name": {
               "description": "Name of the Portworx volume.",
