@@ -86,7 +86,7 @@
           "type": "string",
           "title": "Linux User (Jupyter Notebook Process Execution Context)",
           "description": "The Linux user account name under whom the Jupyter Notebook will run and own the Mesos Sandbox. Note: It is not recommended to set the Mesosphere Jupyter Service to run as root",
-          "default": "nobody"
+          "default": "root"
         },
         "cmd": {
           "type": "string",
@@ -487,7 +487,7 @@
           "type": "string",
           "title": "Spark User (Process Execution Context)",
           "description": "The Linux user under which the Spark Executors will run",
-          "default": "nobody"
+          "default": "root"
         }
       }
     },
@@ -512,7 +512,7 @@
           "type": "string",
           "title": "Home Directory",
           "description": "Your Home Directory (HOME)",
-          "default": "/mnt/mesos/sandbox"
+          "default": "/mnt/mesos/sandbox/data"
         },
         "sandbox": {
           "type": "string",
@@ -530,7 +530,7 @@
           "type": "string",
           "title": "Jupyter Notebook Configuration Directory",
           "description": "Jupyter Notebook Configuration Directory (JUPYTER_CONFIG_DIR)",
-          "default": "/mnt/mesos/sandbox/.jupyter"
+          "default": "/mnt/mesos/sandbox/data/.jupyter"
         },
         "jupyter_runtime_dir": {
           "type": "string",
@@ -542,19 +542,19 @@
           "type": "string",
           "title": "Conda Environment Paths",
           "description": "Conda Environment Paths (CONDA_ENVS_PATH)",
-          "default": "/mnt/mesos/sandbox/conda/envs:/opt/conda/envs"
+          "default": "/mnt/mesos/sandbox/data/conda/envs:/opt/conda/envs"
         },
         "conda_pkgs_dir": {
           "type": "string",
           "title": "Conda Package Directory Paths",
           "description": "Conda Package Directory Paths (CONDA_PKGS_DIRS)",
-          "default": "/mnt/mesos/sandbox/conda/pkgs:/opt/conda/pkgs"
+          "default": "/mnt/mesos/sandbox/data/conda/pkgs:/opt/conda/pkgs"
         },
         "dcos_dir": {
           "type": "string",
           "title": "DC/OS CLI Configuration Directory",
           "description": "DC/OS CLI Config Directory (DCOS_DIR)",
-          "default": "/mnt/mesos/sandbox/.dcos"
+          "default": "/mnt/mesos/sandbox/data/.dcos"
         },
         "java_opts": {
           "type": "string",
