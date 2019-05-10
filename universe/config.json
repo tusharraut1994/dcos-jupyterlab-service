@@ -536,7 +536,13 @@
           "type": "string",
           "title": "Jupyter Notebook Runtime Directory",
           "description": "Jupyter Notebook Runtime Directory (JUPYTER_RUNTIME_DIR)",
-          "default": "/mnt/mesos/sandbox/.local/share/jupyter/runtime"
+          "default": "/mnt/mesos/sandbox/data/.local/share/jupyter/runtime"
+        },
+        "jupyter_path": {
+          "type": "string",
+          "title": "Jupyter Datafiles Directory",
+          "description": "Jupyter Notebook Datafiles Directory (JUPYTER_PATH)",
+          "default": "/mnt/mesos/sandbox/data/.local/share/jupyter"
         },
         "conda_envs_path": {
           "type": "string",

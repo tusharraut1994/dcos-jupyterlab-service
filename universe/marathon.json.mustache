@@ -236,11 +236,12 @@
     "MESOS_MODULES": "{\"libraries\":[{\"file\":\"\/opt\/mesosphere\/libmesos-bundle\/lib\/mesos\/libdcos_security.so\",\"modules\":[{\"name\": \"com_mesosphere_dcos_ClassicRPCAuthenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"}]},{\"name\":\"com_mesosphere_dcos_http_Authenticatee\",\"parameters\":[{\"key\":\"service_account_credential\",\"value\":\"file://secrets/service-account.json\"},{\"key\":\"jwt_exp_timeout\",\"value\":\"5mins\"},{\"key\":\"preemptive_refresh_duration\",\"value\":\"30mins\"}]}]}]}",
     {{/service.service_account_secret}}
 
-    "CONDA_ENVS_PATH": "{{advanced.sandbox}}/data/conda/envs:/opt/conda/envs",
-    "CONDA_PKGS_DIRS": "{{advanced.sandbox}}/data/conda/pkgs:/opt/conda/pkgs",
-    "DCOS_DIR": "{{advanced.sandbox}}/data/.dcos",
-    "JUPYTER_CONFIG_DIR": "{{advanced.sandbox}}/data/.jupyter",
-    "JUPYTER_RUNTIME_DIR": "{{advanced.sandbox}}/data/.local/share/jupyter/runtime",
+    "CONDA_ENVS_PATH": "{{advanced.conda_envs_path}}",
+    "CONDA_PKGS_DIRS": "{{advanced.conda_pkgs_dir}}",
+    "DCOS_DIR": "{{advanced.dcos_dir}}",
+    "JUPYTER_CONFIG_DIR": "{{advanced.jupyter_config_dir}}",
+    "JUPYTER_RUNTIME_DIR": "{{advanced.jupyter_runtime_dir}}",
+    "JUPYTER_PATH": "{{advanced.jupyter_path}}",
     "HADOOP_CONF_DIR": "{{advanced.hadoop_conf_dir}}",
     "HOME": "{{advanced.home}}",
     "ENABLE_SPARK_MONITOR": "{{advanced.spark_monitor_enabled}}",
